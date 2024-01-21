@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/", authRouter);
-app.use("/api", require("./routes/quiz"));
+app.use("/", require("./routes/quiz"));
 
 // Health API
 app.get("/health", (req, res) => {
@@ -24,11 +24,11 @@ app.get("/health", (req, res) => {
     });
 });
 
-app.use((req, res, next) => {
-    const error = new Error("Not found");
-    error.status = 404;
-    next(error);
-});
+// app.use((req, res, next) => {
+//     const error = new Error("Not found");
+//     error.status = 404;
+//     next(error);
+// });
 
 // Error handler middleware
 app.use((err, req, res, next) => {
