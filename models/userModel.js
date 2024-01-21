@@ -16,8 +16,7 @@ const userSchema = new Schema({
     type: String,
     required: [true, "Password is required"],
   },
+  quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }],
 });
 
-const userModel = mongoose.model("User", userSchema);
-
-module.exports = userModel;
+module.exports = mongoose.model("User", userSchema);

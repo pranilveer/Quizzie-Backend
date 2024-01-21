@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 const mongoose = require('mongoose');
 const cors = require("cors");
-
+dotenv.config();
 const app = express();
 
 const authRouter = require("./routes/authRoutes");
@@ -12,8 +12,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/", authRouter);
-
-dotenv.config();
+app.use("/api", require("./routes/quiz"));
 
 // Health API
 app.get("/health", (req, res) => {
