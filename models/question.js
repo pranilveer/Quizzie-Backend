@@ -14,11 +14,7 @@ const questionSchema = new mongoose.Schema({
   ],
   email: { type: String},
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  // selectedOption: { type: String },
-  // timer: { type: Number, default: 0 },
-  // attempt: { type: Number, default: 0 },
-  // correct: { type: Number, default: 0 },
-  // incorrect: { type: Number, default: 0 },
+ 
 });
 
 module.exports = mongoose.model("Question", questionSchema);
