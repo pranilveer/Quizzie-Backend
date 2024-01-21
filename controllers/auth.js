@@ -35,7 +35,7 @@ exports.register = async (req, res) => {
     // Generate and return the JWT token after sign up
     const user = await User.findOne({ email });
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: 300,
     });
     res.status(201).json({
       message: "User registered successfully",
@@ -73,7 +73,7 @@ exports.login = async (req, res) => {
 
     // Generate and return the JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: 3000,
     });
     res
       .status(200)
@@ -81,28 +81,4 @@ exports.login = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Failed to login" });
   }
-};
-
-exports.isLoggedIn = async (req, res) => {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-
-    if (!token) {
-        return res.json({ isLoggedIn: false });
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        // Check if the user associated with the token exists
-        const user = await User.findById(decoded.userId);
-
-        if (user) {
-            return res.json({ isLoggedIn: true, user: { email: user.email } });
-        } else {
-            return res.json({ isLoggedIn: false });
-        }
-    } catch (error) {
-        console.error("Error verifying token:", error);
-        return res.json({ isLoggedIn: false });
-    }
 };

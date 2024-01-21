@@ -5,7 +5,7 @@ const authenticateUser = async (req, res, next) => {
   const token = req.header("Authorization").split(" ")[1];
   console.log(token);
   if(token){
-    return res.status(200).json({ success :" User Confirmed"});
+    return res.status(200).json({ error: "Unauthorized - Missing token" });
 
   }
 
