@@ -153,5 +153,19 @@ router.put("/quizzes/:quizId", authenticateUser, async (req, res) => {
 
 // Implement other quiz-related routes as needed
 // ...
+router.post("/createquiz", authenticateUser, async (req, res) => {
+  try {
+    const { quizName, quizType, questions, email } = req.body;
+    const userId = req.user._id;
+
+    const quiz = new Question({ quizName, quizType, questions, email, userId });
+    await quiz.save();
+    console.log(quiz)
+    res.status(201).json(quiz);
+  } catch (error) {
+    res.status(500).json({ error: "Quiz creation failed" });
+  }
+  console.log(err.message);
+});
 
 module.exports = router;
