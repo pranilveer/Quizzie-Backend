@@ -1,35 +1,20 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
+// middleware/authMiddleware.js
 
-const authenticateUser = async (req, res, next) => {
-  const token = req.header("Authorization").split(" ")[1];
+const jwt = require('jsonwebtoken');
+const { SECRET_KEY } = process.env; // Make sure to set your secret key in environment variables
+
+const authenticateUser = (req, res, next) => {
+  const token = req.headers('Authorization').split(" ")[1];
   console.log(token);
-  if(token){
-    return res.status(200).json({ success: "User Confirmed" });
-  }
-
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized - Missing token" });
+    return res.status(401).json({ error: 'Unauthorized - No token provided' });
   }
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "defaultSecret");
-
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      return res.status(401).json({ error: "Unauthorized - User not found" });
-    }
-
-    req.user = user;
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = decoded;
     next();
   } catch (error) {
-    if (error.name === "TokenExpiredError") {
-      return res.status(401).json({ error: "Unauthorized - Token expired" });
-    }
-
-    return res.status(401).json({ error: "Unauthorized - Invalid token" });
+    return res.status(401).json({ error: 'Unauthorized - Invalid token' });
   }
 };
-
 module.exports = authenticateUser;

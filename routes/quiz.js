@@ -1,162 +1,58 @@
-// const express = require("express");
-// const router = express.Router();
-// const Quiz = require("../models/quiz");
-// const Question = require("../models/quiz");
-// const authenticateUser = require("../middleware/authMiddleware");
+const express = require("express");
+const {
+  createQuiz,
+  getAllQuizzes,
+  getQuizDetails,
+  totalQuestions,
+  totalImpressions,
+  increaseImpressions,
+  deleteQuiz,
+  editQuiz,
+  quizQuestions,
+  createQuestion,
+  editQuestion,
+  deleteQuestion,
+  answeredQuestion,
+} = require("../controllers/quizController");
+const quizRouter = express.Router();
 
-// // Create a new quiz
-// router.post("/quizzes", authenticateUser, async (req, res) => {
-//   try {
-//     const { quizName, type } = req.body;
-//     const userId = req.user._id;
+// Route for creating a new quiz
+quizRouter.post("/create", createQuiz);
 
-//     const quiz = new Quiz({ quizName, type, userId });
-//     await quiz.save();
-//     res.status(201).json(quiz);
-//   } catch (error) {
-//     res.status(500).json({ error: "Quiz creation failed" });
-//   }
-// });
+// Route for getting all quizzes
+quizRouter.get("/allquiz", getAllQuizzes);
 
-// // Get all quizzes
-// router.get("/quizzes", authenticateUser, async (req, res) => {
-//   try {
-//     const quizzes = await Quiz.find({ userId: req.user._id });
-//     res.status(200).json(quizzes);
-//   } catch (error) {
-//     res.status(500).json({ error: "Failed to fetch quizzes" });
-//   }
-// });
+// Route for getting quiz details by ID
+quizRouter.get("/:quiz_id", getQuizDetails);
 
-// // Share a quiz by generating a unique link or code
-// router.get("/quizzes/:quizId/share", async (req, res) => {
-//   const quizId = req.params.quizId;
-//   try {
-//     const quiz = await Quiz.findById(quizId);
-//     if (!quiz) {
-//       return res.status(404).json({ error: "Quiz not found" });
-//     }
+// Route for getting total number of questions
+quizRouter.get("/total/questions", totalQuestions);
 
-//     // Generate a unique link or code for sharing
-//     const shareLink = `http://localhost:3000/quiz/${quizId}`;
+// Route for getting total impressions
+quizRouter.get("/total/impressions", totalImpressions);
 
-//     res.status(200).json({ shareLink });
-//   } catch (error) {
-//     res.status(500).json({ error: "Failed to generate share link" });
-//   }
-// });
+// Route for increasing impressions for a quiz
+quizRouter.put("/increase/impressions/:quiz_id", increaseImpressions);
 
-// // Track impressions for a quiz
-// router.get("/quizzes/:quizId", async (req, res) => {
-//   const quizId = req.params.quizId;
-//   try {
-//     const quiz = await Quiz.findById(quizId);
-//     if (!quiz) {
-//       return res.status(404).json({ error: "Quiz not found" });
-//     }
-//     // Increment the impression count
-//     quiz.impressionCount = (quiz.impressionCount || 0) + 1;
-//     const quizImpression = await quiz.save();
+// Route for deleting a quiz
+quizRouter.delete("/delete/:quiz_id", deleteQuiz);
 
-//     res
-//       .status(200)
-//       .json({ message: "Impression tracked successfully", quizImpression });
-//   } catch (error) {
-//     res.status(500).json({ error: "Failed to track impression" });
-//   }
-// });
+// Route for editing a quiz
+quizRouter.put("/edit/:quiz_id", editQuiz);
 
-// router.get("/quizzes/read/:quizId", async (req, res) => {
-//   const quizId = req.params.quizId;
-//   try {
-//     const quiz = await Quiz.findById(quizId);
-//     if (!quiz) {
-//       return res.status(404).json({ error: "Quiz not found" });
-//     }
+// Route for getting all questions for a quiz
+quizRouter.get("/questions/:quiz_id", quizQuestions);
 
-//     res.status(200).json(quiz);
-//   } catch (error) {
-//     res.status(500).json({ error: "Failed to track impression" });
-//   }
-// });
+// Route for creating a new question for a quiz
+quizRouter.post("/questions/create", createQuestion);
 
-// // checking for answers
-// router.post("/quizzes/check-answer", async (req, res) => {
-//   const { chooseAnswers, quizId } = req.body;
-//   const quiz = await Quiz.findById(quizId);
+// Route for editing a question
+quizRouter.put("/questions/edit/:quizId/:questionId", editQuestion);
 
-//   let score = 0;
+// Route for deleting a question
+quizRouter.delete("/questions/delete/:quiz_id/:question_id", deleteQuestion);
 
-//   for (const answer of chooseAnswers) {
-//     const question = await Question.findById(answer.questionId);
-//     if (!question) continue;
-//     const correctAnswer = question.options.find((opt) => opt.isCorrect);
-//     const correct = answer.id?.toString() === correctAnswer._id?.toString();
-//     const updateField = correct ? "correct" : "incorrect";
-//     await Question.findByIdAndUpdate(answer.questionId, {
-//       $inc: { [updateField]: 1, attempt: 1 },
-//     });
-//     if (correct) {
-//       score++;
-//     }
-//   }
+// Route for answering a question
+quizRouter.post("/questions/answer/:quiz_id/:question_id", answeredQuestion);
 
-//   res.status(200).json({ status: true, score });
-// });
-
-// router.delete("/quizzes/:quizId", authenticateUser, async (req, res) => {
-//   try {
-//     const quizId = req.params.quizId;
-//     const userId = req.user._id; // Use _id of the user, not quizId
-
-//     const quiz = await Quiz.findOne({ _id: quizId, userId });
-
-//     if (!quiz) {
-//       return res.status(404).json({ error: "Quiz not found" });
-//     }
-
-//     await Quiz.deleteOne({ _id: quizId }); // Use deleteOne to delete the quiz
-
-//     res.status(204).send(); // No content response for successful deletion
-//   } catch (error) {
-//     console.error("Error deleting quiz:", error);
-//     res.status(500).json({ error: "Quiz deletion failed" });
-//   }
-// });
-
-// // PUT /quizzes/:quizId
-// router.put("/quizzes/:quizId", authenticateUser, async (req, res) => {
-//   try {
-//     const quizId = req.params.quizId; // Extract the quiz ID from the route parameters
-//     const { quizName, type } = req.body;
-
-//     // Check if the user has permission to edit this quiz (e.g., make sure the user owns the quiz)
-//     const userId = req.user._id;
-//     const quiz = await Quiz.findOne({ _id: quizId, userId });
-
-//     if (!quiz) {
-//       return res.status(404).json({ error: "Quiz not found" });
-//     }
-
-//     // Update the quiz with the new quizName and type
-//     quiz.quizName = quizName;
-//     quiz.type = type;
-
-//     // Save the updated quiz
-//     await quiz.save();
-
-//     res.status(200).json(quiz);
-//   } catch (error) {
-//     res.status(500).json({ error: "Quiz update failed" });
-//   }
-// });
-
-// module.exports = router;
-
-const express = require('express');
-const router = express.Router();
-const quizController = require('../controllers/quizController');
-
-router.post('/createquiz', quizController.createQuiz);
-
-module.exports = router;
+module.exports = quizRouter;

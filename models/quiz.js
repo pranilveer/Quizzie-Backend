@@ -1,23 +1,27 @@
 const mongoose = require('mongoose');
 
+// Define the option schema
 const optionSchema = new mongoose.Schema({
-  text: { type: String, default: "" },
-  imageURL: { type: String, default: "" },
+  text: String,
+  imageURL: String,
 });
 
+// Define the question schema
 const questionSchema = new mongoose.Schema({
-  pollQuestion: { type: String, default: "" },
-  timerType: { type: String, default: "" },
+  pollQuestion: String,
+  timerType: String,
   options: [optionSchema],
-  ansOption: { type: Number, default: null },
+  ansOption: Number,
 });
 
+// Define the quiz schema
 const quizSchema = new mongoose.Schema({
-  quizName: { type: String, default: "" },
-  quizType: { type: String, default: "" },
+  quizName: String,
+  quizType: String,
   questions: [questionSchema],
 });
 
+// Create a Mongoose model
 const Quiz = mongoose.model('Quiz', quizSchema);
 
 module.exports = Quiz;

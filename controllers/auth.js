@@ -51,26 +51,22 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     // Check if the required fields are provided
     if (!email || !password) {
       return res
         .status(400)
         .json({ error: "Please provide email and password" });
     }
-
     // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
-
     // Compare the provided password with the stored hashed password
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
-
     // Generate and return the JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: 3000,
