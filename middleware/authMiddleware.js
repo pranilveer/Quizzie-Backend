@@ -1,20 +1,26 @@
-// middleware/authMiddleware.js
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
-const jwt = require('jsonwebtoken');
-const { SECRET_KEY } = process.env; // Make sure to set your secret key in environment variables
-
-const authenticateUser = (req, res, next) => {
-  const token = req.headers('Authorization').split(" ")[1];
+const authenticateUser = async (req, res, next) => {
+  const token = req.header("Authorization").split(" ")[1];
   console.log(token);
   if (!token) {
-    return res.status(401).json({ error: 'Unauthorized - No token provided' });
+    return res.status(401).json({ error: "Unauthorized - Missing token" });
   }
+
   try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded;
+    const decoded = jwt.verify(token, "abcdef");
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized - Invalid token" });
+    }
+
+    req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({ error: 'Unauthorized - Invalid token' });
+    res.status(500).json({ error: "Authentication failed" });
   }
 };
+
 module.exports = authenticateUser;
