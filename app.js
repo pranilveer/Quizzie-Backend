@@ -3,10 +3,12 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
+const dotenv = require('dotenv')
 const port = process.env.PORT || 5000;
+dotenv.config();
 
 mongoose
-  .connect("mongodb+srv://admin:admin123@cluster0.xmvrdox.mongodb.net/?retryWrites=true&w=majority")
+  .connect(process.env.MONGODB_URL)
   .then(() => {
     console.log("MongoDB connected successfully");
   })
