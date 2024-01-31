@@ -5,7 +5,6 @@ const authenticateUser = require("../middleware/authMiddleware");
 
 router.post("/questions", authenticateUser, async (req, res) => {
   try {
-    // const { text, options, timer, quizId, selectedOption } = req.body;
     const { questions, quizId } = req.body;
     const userId = req.user._id;
 
@@ -30,7 +29,6 @@ router.post("/questions", authenticateUser, async (req, res) => {
 
 router.put("/questions", authenticateUser, async (req, res) => {
   try {
-    // const { text, options, timer, quizId, selectedOption } = req.body;
     const { questions, quizId } = req.body;
     const userId = req.user._id;
 
@@ -123,8 +121,5 @@ router.put("/questions/:questionId", authenticateUser, async (req, res) => {
     res.status(500).json({ error: "Question update failed" });
   }
 });
-
-// Implement other question-related routes as needed
-// ...
 
 module.exports = router;

@@ -152,7 +152,4 @@ router.put("/quizzes/:quizId", authenticateUser, async (req, res) => {
   }
 });
 
-// Implement other quiz-related routes as needed
-// ...
-
 module.exports = router;

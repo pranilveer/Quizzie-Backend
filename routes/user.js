@@ -76,7 +76,4 @@ router.put("/users/:userId/profile", authenticateUser, async (req, res) => {
   }
 });
 
-// Implement other user-related routes (e.g., update user profile)
-// ...
-
 module.exports = router;
